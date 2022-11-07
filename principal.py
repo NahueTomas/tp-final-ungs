@@ -5,7 +5,6 @@ import pygame
 from pygame.locals import *
 from configuracion import *
 from extras import *
-
 from funcionesVACIAS import *
 
 #Funcion principal
@@ -29,9 +28,6 @@ def main():
         palabraUsuario = ""
         listaPalabrasDiccionario=[]
         ListaDePalabrasUsuario = []
-        correctas = []
-        incorrectas = []
-        casi = []
         gano = False
 
         archivo= open("lemario.txt","r")
@@ -41,7 +37,7 @@ def main():
         #elige una al azar
         palabraCorrecta=nuevaPalabra(listaPalabrasDiccionario)
 
-        dibujar(screen, ListaDePalabrasUsuario, palabraUsuario, puntos,segundos, gano, correctas, incorrectas, casi)
+        dibujar(screen, ListaDePalabrasUsuario, palabraUsuario, puntos,segundos, gano,palabraCorrecta)
         print(palabraCorrecta)
         intentos = 5
 
@@ -68,12 +64,17 @@ def main():
                     if e.key == K_BACKSPACE:
                         palabraUsuario = palabraUsuario[0:len(palabraUsuario)-1]
                     if e.key == K_RETURN:
+                            if len(palabraUsuario) == LARGO:
                             #falta hacer un control para que sea una palabra de la longitud deseada
                             #falta controlar que la palabra este en el diccionario
-                            gano = revision(palabraCorrecta, palabraUsuario, correctas, incorrectas, casi)
-                            ListaDePalabrasUsuario.append(palabraUsuario)
-                            palabraUsuario = ""
-                            intentos -= 1
+                                gano = revision(palabraCorrecta, palabraUsuario)
+                                ListaDePalabrasUsuario.append(palabraUsuario)
+                                palabraUsuario = ""
+                                # if gano:
+                                    # DialogsInfo("gano") #TkinterDialog- Que le acertaste
+                                intentos -= 1
+                            # else:
+                                # DialogsInfo("errorLongitud") #TkinterDialog- La longitud de la palabra es incorrecta
 
             segundos = TIEMPO_MAX - pygame.time.get_ticks()/1000
 
@@ -81,7 +82,7 @@ def main():
             screen.fill(COLOR_FONDO)
 
             #Dibujar de nuevo todo
-            dibujar(screen, ListaDePalabrasUsuario, palabraUsuario, puntos,segundos, gano, correctas, incorrectas, casi)
+            dibujar(screen, ListaDePalabrasUsuario, palabraUsuario, puntos,segundos, gano, palabraCorrecta)
 
             pygame.display.flip()
 

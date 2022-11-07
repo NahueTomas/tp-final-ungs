@@ -66,8 +66,7 @@ def dameLetraApretada(key):
         return("")
 
 
-def dibujar(screen, listaDePalabrasUsuario, palabraUsuario, puntos, segundos, gano,
-                correctas, incorrectas, casi):
+def dibujar(screen, listaDePalabrasUsuario, palabraUsuario, puntos, segundos, gano,palabraCorrecta):
     defaultFont= pygame.font.Font( pygame.font.get_default_font(), TAMANNO_LETRA)
     defaultFontGrande= pygame.font.Font( pygame.font.get_default_font(), TAMANNO_LETRA_GRANDE)
 
@@ -86,11 +85,26 @@ def dibujar(screen, listaDePalabrasUsuario, palabraUsuario, puntos, segundos, ga
     screen.blit(ren, (10, 10))
 
     #muestra las palabras anteriores, las que se fueron arriesgando
-    pos = 0
+    posY = 50
+    ANCHO // 1 * TAMANNO_LETRA_GRANDE // 4,20 + 80 * posY
+    dibujarGrilla(screen)
     for palabra in listaDePalabrasUsuario:
-        screen.blit(defaultFontGrande.render(palabra, 1, COLOR_LETRAS), (ANCHO//2-len(palabra)*TAMANNO_LETRA_GRANDE//4,20 + 80 * pos))
-        pos += 1
-
+        posX = 100
+        correctas = letrasCorrecta(palabraCorrecta, palabra) # Obtenemos las letras correctas de la palabra
+        casi = letrasCasi(palabraCorrecta, palabra) # Obtenemos las letras correctas de una palabra casi correcta
+        incorrecta = letrasIncorrecta(palabraCorrecta, palabra,casi,correctas) # Obtenemos las letras incorrectas de una palabra incorrecta
+        for posLetra in range(len(palabra)): # Dibujamos y pintamos las letras que son correctas de una palabra correcta
+            if correctas[posLetra] == True:
+                letra = defaultFontGrande.render(palabra[posLetra], 1, COLOR_CORRECTA)
+            elif casi[posLetra] == True: # Dibujamos y pintamos las letras que son correctas de una palabra casi correcta
+                letra = defaultFontGrande.render(palabra[posLetra], 1, COLOR_CASI)
+            elif incorrecta[posLetra] == True: # Dibujamos y pintamos las letras que son incorrectas de una palabra incorrecta
+                letra = defaultFontGrande.render(palabra[posLetra], 1, COLOR_INCORRECTA)
+            width = letra.get_width()
+            espaciado = 40
+            screen.blit(letra, (posX + espaciado, posY))
+            posX = posX + espaciado
+        posY += 70
     #muestra el abcdario, falta ponerle color a las letras
     abcdario = ["qwertyuiop", "asdfghjklm", "zxcvbnm"]
     y=0
@@ -102,10 +116,26 @@ def dibujar(screen, listaDePalabrasUsuario, palabraUsuario, puntos, segundos, ga
             x += TAMANNO_LETRA
         y += TAMANNO_LETRA
 
+def dibujarGrilla(screen):
+    screen_rect = screen.get_rect()
+    center = screen_rect.center
 
+    posY = center[0] - 280
+    posX = center[1] - 28
 
+    # print(posY)
+    # print(posX)
 
+    cuadradoTam = 50
 
+    # 0 - 50 - 100 - 150 - 200
+    for x in range(0, 201, cuadradoTam):
+        for y in range(0, 201, cuadradoTam):
+            rect = pygame.Rect(x + posX, y + posY, cuadradoTam, cuadradoTam)
+            pygame.draw.rect(screen, COLOR_BLANCO, rect, 1)
 
-
-
+    # rect = pygame.Rect(pos // 2,  // 2, cuadradoTam, cuadradoTam)
+    # pygame.draw.rect(screen, COLOR_BLANCO, rect, 1)
+    
+    # rect = pygame.Rect((center[0] -  (cuadradoTam) // 2 + cuadradoTam * 2), (center[1] - cuadradoTam // 2), cuadradoTam, cuadradoTam)
+    # pygame.draw.rect(screen, COLOR_BLANCO, rect, 1)
