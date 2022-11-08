@@ -84,15 +84,17 @@ def dibujar(screen, listaDePalabrasUsuario, palabraUsuario, puntos, segundos, ga
         ren = defaultFont.render("Tiempo: " + str(int(segundos)), 1, COLOR_TEXTO)
     screen.blit(ren, (10, 10))
 
-    #muestra las palabras anteriores, las que se fueron arriesgando
-    posY = 50
-    ANCHO // 1 * TAMANNO_LETRA_GRANDE // 4,20 + 80 * posY
+    # Dibuja la grilla y devuelve una lista con las posiciones de cada cuadrado
     dibujarGrilla(screen)
+    posGrilla = dibujarGrilla(screen)
+    contador = 0
+
+    # muestra las palabras anteriores, las que se fueron arriesgando
     for palabra in listaDePalabrasUsuario:
-        posX = 100
         correctas = letrasCorrecta(palabraCorrecta, palabra) # Obtenemos las letras correctas de la palabra
         casi = letrasCasi(palabraCorrecta, palabra) # Obtenemos las letras correctas de una palabra casi correcta
-        incorrecta = letrasIncorrecta(palabraCorrecta, palabra,casi,correctas) # Obtenemos las letras incorrectas de una palabra incorrecta
+        incorrecta = letrasIncorrecta(palabraCorrecta, palabra, casi, correctas) # Obtenemos las letras incorrectas de una palabra incorrecta
+
         for posLetra in range(len(palabra)): # Dibujamos y pintamos las letras que son correctas de una palabra correcta
             if correctas[posLetra] == True:
                 letra = defaultFontGrande.render(palabra[posLetra], 1, COLOR_CORRECTA)
@@ -100,11 +102,12 @@ def dibujar(screen, listaDePalabrasUsuario, palabraUsuario, puntos, segundos, ga
                 letra = defaultFontGrande.render(palabra[posLetra], 1, COLOR_CASI)
             elif incorrecta[posLetra] == True: # Dibujamos y pintamos las letras que son incorrectas de una palabra incorrecta
                 letra = defaultFontGrande.render(palabra[posLetra], 1, COLOR_INCORRECTA)
-            width = letra.get_width()
-            espaciado = 40
-            screen.blit(letra, (posX + espaciado, posY))
-            posX = posX + espaciado
-        posY += 70
+            center = posGrilla[contador]
+            posX = center[0] - letra.get_width() // 2
+            posY = center[1] - letra.get_height() // 2
+            screen.blit(letra, (posX, posY))
+            contador = contador + 1
+
     #muestra el abcdario, falta ponerle color a las letras
     abcdario = ["qwertyuiop", "asdfghjklm", "zxcvbnm"]
     y=0
@@ -120,22 +123,16 @@ def dibujarGrilla(screen):
     screen_rect = screen.get_rect()
     center = screen_rect.center
 
-    posY = center[0] - 280
-    posX = center[1] - 28
+    posY = center[0] - 125
+    posX = center[1] - 220
 
-    # print(posY)
-    # print(posX)
-
+    posGrilla =[]
     cuadradoTam = 50
 
     # 0 - 50 - 100 - 150 - 200
     for x in range(0, 201, cuadradoTam):
         for y in range(0, 201, cuadradoTam):
-            rect = pygame.Rect(x + posX, y + posY, cuadradoTam, cuadradoTam)
+            rect = pygame.Rect(y + posY, x + posX, cuadradoTam, cuadradoTam)
             pygame.draw.rect(screen, COLOR_BLANCO, rect, 1)
-
-    # rect = pygame.Rect(pos // 2,  // 2, cuadradoTam, cuadradoTam)
-    # pygame.draw.rect(screen, COLOR_BLANCO, rect, 1)
-    
-    # rect = pygame.Rect((center[0] -  (cuadradoTam) // 2 + cuadradoTam * 2), (center[1] - cuadradoTam // 2), cuadradoTam, cuadradoTam)
-    # pygame.draw.rect(screen, COLOR_BLANCO, rect, 1)
+            posGrilla.append(rect.center)
+    return posGrilla
