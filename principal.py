@@ -1,99 +1,142 @@
 #! /usr/bin/env python
-import os, random, sys, math
+import os
 
 import pygame
 from pygame.locals import *
-from configuracion import *
-from extras import *
-from funcionesVACIAS import *
+from pygame import mixer  # sonido
 
-#Funcion principal
+from config.configuracion import ANCHO, ALTO, TIEMPO_MAX, FPS_inicial, LARGO, COLOR_FONDO
+
+from funciones.sonidos.efectoSonido import efectoSonido
+from funciones.sonidos.reproducirMusica import reproducirMusica
+from funciones.teclado.dameLetraApretada import dameLetraApretada
+from funciones.palabras.revision import revision
+from funciones.palabras.nuevaPalabra import nuevaPalabra
+from funciones.palabras.lectura import lectura
+from funciones.menu.menuInicio import menuInicio
+from funciones.graficos.dibujar import dibujar
+from funciones.graficos.cartel import cartelGanar, cartelPerder
+
+
+# Funcion principal
 def main():
-        #Centrar la ventana y despues inicializar pygame
-        os.environ["SDL_VIDEO_CENTERED"] = "1"
-        pygame.init()
-        #pygame.mixer.init()
+    # Centrar la ventana y despues inicializar pygame
+    os.environ["SDL_VIDEO_CENTERED"] = "1"
 
-        #Preparar la ventana
-        pygame.display.set_caption("La escondida...")
-        screen = pygame.display.set_mode((ANCHO, ALTO))
+    # Preparar la ventana
+    pygame.display.set_caption("La escondida...")
+    screen = pygame.display.set_mode((ANCHO, ALTO))
 
-        #tiempo total del juego
-        gameClock = pygame.time.Clock()
-        totaltime = 0
-        segundos = TIEMPO_MAX
-        fps = FPS_inicial
+    # tiempo total del juego
+    gameClock = pygame.time.Clock()
+    totaltime = 0
+    segundos = TIEMPO_MAX
+    fps = FPS_inicial
 
-        puntos = 0
-        palabraUsuario = ""
-        listaPalabrasDiccionario=[]
-        ListaDePalabrasUsuario = []
-        gano = False
+    # Musica Inicio
+    musica = efectoSonido(0)
+    mixer.music.load(musica)
+    mixer.music.set_volume(0.5)
+    mixer.music.play(-1)
 
-        archivo= open("lemario.txt","r")
-        #lectura del diccionario
-        lectura(archivo, listaPalabrasDiccionario, LARGO)
+    puntos = 0
+    palabraUsuario = ""
+    listaPalabrasDiccionario = []
+    ListaDePalabrasUsuario = []
+    ListaSegundos = []
+    contador = 0
+    gano = False
 
-        #elige una al azar
-        palabraCorrecta=nuevaPalabra(listaPalabrasDiccionario)
+    archivo = open('assets/txt/lemario.txt', 'r')
 
-        dibujar(screen, ListaDePalabrasUsuario, palabraUsuario, puntos,segundos, gano,palabraCorrecta)
-        print(palabraCorrecta)
-        intentos = 5
+    # lectura del diccionario
+    lectura(archivo, listaPalabrasDiccionario, LARGO)
 
-        while segundos > fps/1000 and intentos > 0 and not gano:
+    # elige una al azar
+    palabraCorrecta = nuevaPalabra(listaPalabrasDiccionario)
+
+    dibujar(screen, ListaDePalabrasUsuario, palabraUsuario,
+            puntos, segundos, gano, palabraCorrecta)
+    print(palabraCorrecta)
+    intentos = 5
+
+    while segundos > fps/1000 and intentos > 0 and not gano:
         # 1 frame cada 1/fps segundos
-            gameClock.tick(fps)
-            totaltime += gameClock.get_time()
+        gameClock.tick(fps)
+        totaltime += gameClock.get_time()
 
-            if True:
-            	fps = 3
+        # Buscar la tecla apretada del modulo de eventos de pygame
+        for e in pygame.event.get():
+            # QUIT es apretar la X en la ventana
+            if e.type == QUIT:
+                pygame.quit()
+                return ()
 
-            #Buscar la tecla apretada del modulo de eventos de pygame
-            for e in pygame.event.get():
+            # Ver si fue apretada alguna tecla
+            if e.type == KEYDOWN:
+                letra = dameLetraApretada(e.key)
+                palabraUsuario += letra  # es la palabra que escribe el usuario
+                if e.key == K_BACKSPACE:
+                    palabraUsuario = palabraUsuario[0:len(palabraUsuario)-1]
+                if e.key == K_RETURN:
+                    if len(palabraUsuario) == LARGO and palabraUsuario in listaPalabrasDiccionario and palabraUsuario not in ListaDePalabrasUsuario:
 
-                #QUIT es apretar la X en la ventana
-                if e.type == QUIT:
-                    pygame.quit()
-                    return()
+                        gano = revision(palabraCorrecta, palabraUsuario)
+                        ListaDePalabrasUsuario.append(palabraUsuario)
+                        palabraUsuario = ""
 
-                #Ver si fue apretada alguna tecla
-                if e.type == KEYDOWN:
-                    letra = dameLetraApretada(e.key)
-                    palabraUsuario += letra #es la palabra que escribe el usuario
-                    if e.key == K_BACKSPACE:
-                        palabraUsuario = palabraUsuario[0:len(palabraUsuario)-1]
-                    if e.key == K_RETURN:
-                            if len(palabraUsuario) == LARGO:
-                            #falta hacer un control para que sea una palabra de la longitud deseada
-                            #falta controlar que la palabra este en el diccionario
-                                gano = revision(palabraCorrecta, palabraUsuario)
-                                ListaDePalabrasUsuario.append(palabraUsuario)
-                                palabraUsuario = ""
-                                # if gano:
-                                    # DialogsInfo("gano") #TkinterDialog- Que le acertaste
-                                intentos -= 1
-                            # else:
-                                # DialogsInfo("errorLongitud") #TkinterDialog- La longitud de la palabra es incorrecta
+                        if gano:
+                            # DialogsInfo("gano") #TkinterDialog- Que le acertaste
+                            # Sonido de palabra correcta
+                            ganar = efectoSonido(2)
+                            otro = mixer.Sound(ganar)
+                            otro.play()
 
-            segundos = TIEMPO_MAX - pygame.time.get_ticks()/1000
+                            puntos += 10
+                        else:
+                            # Sonido de palabra incorrecta / casi
+                            error = efectoSonido(1)
+                            otro = mixer.Sound(error)
+                            otro.play()
+                            intentos -= 1
 
-            #Limpiar pantalla anterior
-            screen.fill(COLOR_FONDO)
+                    # else:
+                        # DialogsInfo("errorLongitud") #TkinterDialog- La longitud de la palabra es incorrecta
 
-            #Dibujar de nuevo todo
-            dibujar(screen, ListaDePalabrasUsuario, palabraUsuario, puntos,segundos, gano, palabraCorrecta)
+        segundos = TIEMPO_MAX - pygame.time.get_ticks()/1000
 
-            pygame.display.flip()
+        # Limpiar pantalla anterior
+        screen.fill(COLOR_FONDO)
 
-        while 1:
-            #Esperar el QUIT del usuario
-            for e in pygame.event.get():
-                if e.type == QUIT:
-                    pygame.quit()
-                    return
+        # Dibujar de nuevo todo
+        dibujar(screen, ListaDePalabrasUsuario, palabraUsuario,
+                puntos, segundos, gano, palabraCorrecta)
 
-        archivo.close()
-#Programa Principal ejecuta Main
+        # Reproduccion de Banda sonora
+        auxSegundos = int(segundos)
+        if auxSegundos not in ListaSegundos:
+            ListaSegundos.append(auxSegundos)
+        musica = reproducirMusica(contador, ListaSegundos)
+        contador += 1
+
+        if gano:  # cartel ganar
+            cartelGanar(screen)
+
+        if intentos == 0 or segundos < 0:  # cartel perder
+            cartelPerder(screen, palabraCorrecta)
+
+        pygame.display.flip()
+
+    while 1:
+        # Esperar el QUIT del usuario
+        for e in pygame.event.get():
+            if e.type == QUIT:
+                pygame.quit()
+                return
+
+    archivo.close()
+
+
+# Programa Principal ejecuta Main
 if __name__ == "__main__":
-    main()
+    menuInicio(ANCHO, ALTO, main)
