@@ -40,8 +40,7 @@ def dibujar(screen, listaDePalabrasUsuario, palabraUsuario, puntos, segundos, ga
         screen.blit(ren, (10, 10))
 
     # Dibuja la grilla y devuelve una lista con las posiciones de cada cuadrado
-    posGrilla = dibujarGrilla(screen)
-    dibujarGrilla(screen)
+    posGrilla = dibujarGrilla(screen, len(palabraCorrecta))
     contador = 0
 
     # muestra las palabras anteriores, las que se fueron arriesgando

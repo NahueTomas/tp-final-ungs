@@ -6,7 +6,7 @@ import pygame
 from pygame.locals import *
 from pygame import mixer  # sonido
 
-from config.configuracion import ANCHO, ALTO, TIEMPO_MAX, FPS_inicial, LARGO, COLOR_FONDO
+from config.configuracion import ANCHO, ALTO, TIEMPO_MAX, FPS_inicial, COLOR_FONDO
 
 from funciones.sonidos.efectoSonido import efectoSonido
 from funciones.sonidos.reproducirMusica import reproducirMusica
@@ -14,13 +14,12 @@ from funciones.teclado.dameLetraApretada import dameLetraApretada
 from funciones.palabras.revision import revision
 from funciones.palabras.nuevaPalabra import nuevaPalabra
 from funciones.palabras.lectura import lectura
-from funciones.menu.menuInicio import menuInicio
 from funciones.graficos.dibujar import dibujar
 from funciones.graficos.cartel import cartelGanar, cartelPerder
 
 
 # Funcion principal
-def normalMode():
+def normalMode(cant_letras):
     # Centrar la ventana y despues inicializar pygame
     os.environ["SDL_VIDEO_CENTERED"] = "1"
 
@@ -51,7 +50,7 @@ def normalMode():
     archivo = open('assets/txt/lemario.txt', 'r')
 
     # lectura del diccionario
-    lectura(archivo, listaPalabrasDiccionario, LARGO)
+    lectura(archivo, listaPalabrasDiccionario, cant_letras)
 
     # elige una al azar
     palabraCorrecta = nuevaPalabra(listaPalabrasDiccionario)
@@ -80,7 +79,7 @@ def normalMode():
                 if e.key == K_BACKSPACE:
                     palabraUsuario = palabraUsuario[0:len(palabraUsuario)-1]
                 if e.key == K_RETURN:
-                    if len(palabraUsuario) == LARGO and palabraUsuario in listaPalabrasDiccionario and palabraUsuario not in ListaDePalabrasUsuario:
+                    if len(palabraUsuario) == cant_letras and palabraUsuario in listaPalabrasDiccionario and palabraUsuario not in ListaDePalabrasUsuario:
                         gano = revision(palabraCorrecta, palabraUsuario)
                         ListaDePalabrasUsuario.append(palabraUsuario)
                         palabraUsuario = ""

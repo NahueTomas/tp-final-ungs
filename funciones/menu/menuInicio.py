@@ -8,19 +8,23 @@ from funciones.sonidos.efectoSonido import efectoSonido
 
 
 # Menu inicio
-def menuInicio(ancho, alto, main):
+def menuInicio(ancho, alto, normalMode):
     os.environ["SDL_VIDEO_CENTERED"] = "1"
     pygame.init()
     screen = pygame.display.set_mode((ancho, alto))
     menu = pygame_menu.Menu('La escondida', ancho, alto,
                             theme=pygame_menu.themes.THEME_DARK)
 
-    menu.add.text_input('Jugador: ', default='')
-    menu.add.selector(
-        'Dificultad :', [('Hard', 1), ('Easy', 2)], onchange=dificultad)
-    menu.add.selector('Niveles :', [
-                      ('Animales', 1), ('Superheroes', 2), ('Paises', 3)], onchange=dificultad)
-    menu.add.button('Jugar', main)
+    menu.add.selector('Dificultad :', [
+                      ('Fácil', 3),  ('Normal', 5), ('Dificil', 8)], selector_id='letras')
+
+    menu.add.button('Jugar Normal', lambda: play_game(
+        menu.get_input_data(), normalMode))
+    menu.add.button('Jugar por tiempo', normalMode)
+    menu.add.button('Jugar por intentos', normalMode)
+
+    menu.add.button('ranking', normalMode)
+
     menu.add.button('Salir', pygame_menu.events.EXIT)
 
     # musica
@@ -32,5 +36,6 @@ def menuInicio(ancho, alto, main):
     menu.mainloop(screen)
 
 
-def dificultad():
-    pass
+def play_game(inputs, game):
+    letras = inputs['letras'][0][1]
+    game(letras)
