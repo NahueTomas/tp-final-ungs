@@ -2,6 +2,7 @@
 def revision(palabraCorrecta, palabra):
     palabraMin = palabra.lower()
     palabraCorrectaMin = palabraCorrecta.lower()
+
     if palabraCorrectaMin == palabraMin:
         return True
     else:
