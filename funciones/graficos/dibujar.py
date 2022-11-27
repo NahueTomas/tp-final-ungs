@@ -6,6 +6,7 @@ from funciones.letras.letrasCorrecta import letrasCorrecta
 from funciones.letras.letrasIncorrecta import letrasIncorrecta
 from funciones.letras.letrasCasi import letrasCasi
 from funciones.graficos.dibujarGrilla import dibujarGrilla
+from funciones.graficos.tip import tip
 
 
 # Dibuja los gráficos principales
@@ -18,6 +19,9 @@ def dibujar(screen, listaDePalabrasUsuario, palabraUsuario, puntos, segundos, ga
     # Linea Horizontal
     pygame.draw.line(screen, (255, 255, 255),
                      (0, ALTO-70), (ANCHO, ALTO-70), 5)
+
+    # Tip message
+    tip('Palabra de ' + str(len(palabraCorrecta)) + ' letras', screen)
 
     # muestra lo que escribe el jugador
     screen.blit(defaultFont.render(palabraUsuario, 1, COLOR_TEXTO), (190, 570))

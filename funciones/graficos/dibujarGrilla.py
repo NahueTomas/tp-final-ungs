@@ -8,7 +8,7 @@ def dibujarGrilla(screen):
     center = screen_rect.center
 
     posY = center[0] - 125
-    posX = center[1] - 220
+    posX = center[1] - 160
 
     posGrilla = []
     cuadradoTam = 50
