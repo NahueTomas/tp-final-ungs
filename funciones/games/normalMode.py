@@ -29,7 +29,7 @@ def normalMode(cant_letras, tematica):
         screen = pygame.display.set_mode((ANCHO, ALTO))
 
         # tiempo total del juego
-        gameClock = pygame.time.Clock()
+        tiempoInicial = time.time()
         totaltime = 0
         segundos = TIEMPO_MAX
         fps = FPS_inicial
@@ -44,8 +44,6 @@ def normalMode(cant_letras, tematica):
         palabraUsuario = ""
         listaPalabrasDiccionario = []
         ListaDePalabrasUsuario = []
-        ListaSegundos = []
-        contador = 0
         gano = False
 
         archivo = open('assets/txt/lemario.txt', 'r')
@@ -64,8 +62,8 @@ def normalMode(cant_letras, tematica):
 
         while (segundos > fps/1000 and intentos > 0 and not gano):
             # 1 frame cada 1/fps segundos
-            gameClock.tick(fps)
-            totaltime += gameClock.get_time()
+            tiempoActal = time.time()
+            totaltime = (tiempoActal - tiempoInicial)
 
             # Buscar la tecla apretada del modulo de eventos de pygame
             for e in pygame.event.get():
@@ -101,7 +99,7 @@ def normalMode(cant_letras, tematica):
                                 otro.play()
                                 intentos -= 1
 
-            segundos = TIEMPO_MAX - pygame.time.get_ticks()/1000
+            segundos = TIEMPO_MAX - totaltime
 
             # Limpiar pantalla anterior
             screen.fill(COLOR_FONDO)
@@ -111,11 +109,7 @@ def normalMode(cant_letras, tematica):
                     puntos, segundos, gano, palabraCorrecta)
 
             # Reproduccion de Banda sonora
-            auxSegundos = int(segundos)
-            if auxSegundos not in ListaSegundos:
-                ListaSegundos.append(auxSegundos)
-            musica = reproducirMusica(contador, ListaSegundos)
-            contador += 1
+            musica = reproducirMusica(segundos)
 
             if gano:  # cartel ganar
                 cartelGanar(screen)
