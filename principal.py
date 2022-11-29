@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 import os
 
-import pygame
 from pygame.locals import *
 
 from config.configuracion import ANCHO, ALTO

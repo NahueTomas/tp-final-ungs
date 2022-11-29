@@ -1,6 +1,6 @@
-import os
-
 import pygame
+from pygame.locals import *
+
 from config.configuracion import COLOR_CORRECTA, COLOR_INCORRECTA, COLOR_CARTEL, TAMANNO_LETRA_GRANDE
 
 
@@ -30,18 +30,22 @@ def cartel(screen, titulo, colorFont, colorCartel, fontSize, subtitle=''):
     exitBtn = pygame.draw.rect(screen, 'red', pygame.Rect(80, 340, 80, 40), 0)
     playAgainBtn = pygame.draw.rect(
         screen, 'green', pygame.Rect(600, 340, 80, 40), 0)
+    menuBtn = pygame.draw.rect(
+        screen, 'orange', pygame.Rect(350, 340, 80, 40), 0)
 
     ev = pygame.event.get()
 
     for event in ev:
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            print(event.type)
+        if event.type == MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
             if (exitBtn.collidepoint(pos)):
                 pygame.quit()
-                return False
             if (playAgainBtn.collidepoint(pos)):
-                return True
+                return 'reset'
+            if (menuBtn.collidepoint(pos)):
+                return 'menu'
+        if event.type == QUIT:
+            pygame.quit()
 
  # Cartel GANAR
 

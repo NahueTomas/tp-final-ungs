@@ -118,13 +118,17 @@ def normalMode(cant_letras, tematica):
 
             if gano:  # cartel ganar
                 res = cartelGanar(screen)
-                if (res):
+                if (res == 'reset'):
                     break
+                elif (res == 'menu'):
+                    return
 
             if perdio:  # cartel perder
-                res = cartelPerder(screen)
-                if (res):
+                res = cartelPerder(screen, palabraCorrecta)
+                if (res == 'reset'):
                     break
+                elif (res == 'menu'):
+                    return
 
             pygame.display.flip()
 
