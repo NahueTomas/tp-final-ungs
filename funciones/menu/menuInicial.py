@@ -1,6 +1,7 @@
 import pygame_menu
 from funciones.menu.menuRanking import menuRanking
 from funciones.games.normalMode import normalMode
+from funciones.games.timeMode import timeMode
 
 
 def menuInicial(menu):
@@ -13,7 +14,8 @@ def menuInicial(menu):
     menu.add.button('Jugar Normal', lambda: play_game(
         menu.get_input_data(), normalMode))
 
-    menu.add.button('Jugar por tiempo', normalMode)
+    menu.add.button('Jugar por tiempo', lambda: play_game(
+        menu.get_input_data(), timeMode))
 
     menu.add.button('Ranking', lambda: cambiar_menu(menu))
 

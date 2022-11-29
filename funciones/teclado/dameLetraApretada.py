@@ -31,6 +31,8 @@ def dameLetraApretada(key):
         return ("m")
     elif key == K_n:
         return ("n")
+    elif key == 241:
+        return ("ñ")
     elif key == K_o:
         return ("o")
     elif key == K_p:
