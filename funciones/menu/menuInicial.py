@@ -1,4 +1,5 @@
 import pygame_menu
+from funciones.menu.menuRanking import menuRanking
 from funciones.games.normalMode import normalMode
 
 
@@ -14,9 +15,7 @@ def menuInicial(menu):
 
     menu.add.button('Jugar por tiempo', normalMode)
 
-    menu.add.button('Jugar por intentos', normalMode)
-
-    menu.add.button('Ranking')
+    menu.add.button('Ranking', lambda: cambiar_menu(menu))
 
     menu.add.button('Salir', pygame_menu.events.EXIT)
 
@@ -25,3 +24,8 @@ def play_game(inputs, game):
     letras = inputs['letras'][0][1]
     tematica = inputs['tematicas'][0][1]
     game(letras, tematica)
+
+
+def cambiar_menu(menu):
+    menu.clear()
+    menuRanking(menu)
