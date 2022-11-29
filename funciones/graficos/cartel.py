@@ -59,3 +59,7 @@ def cartelGanar(screen):
 def cartelPerder(screen, palabraCorrecta):
     return cartel(screen, "PERDISTE!!",
                   COLOR_INCORRECTA, COLOR_CARTEL, TAMANNO_LETRA_GRANDE, "La palabra correcta era: " + palabraCorrecta.upper())
+
+
+def cartelTermino(screen, cant_palabras):
+    return cartel(screen, 'TERMINO EL TIEMPO!', COLOR_CORRECTA, COLOR_CARTEL, TAMANNO_LETRA_GRANDE, "Acertaste " + cant_palabras + ' palabras :D')

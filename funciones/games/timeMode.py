@@ -15,11 +15,19 @@ from funciones.palabras.revision import revision
 from funciones.palabras.nuevaPalabra import nuevaPalabra
 from funciones.palabras.lectura import lectura
 from funciones.graficos.dibujar import dibujar
-from funciones.graficos.cartel import cartelGanar, cartelPerder
+from funciones.graficos.cartel import cartelTermino
 
 
 # Funcion principal
 def timeMode(cant_letras, tematica):
+    termino = False
+    puntos = 0
+
+    # tiempo total del juego
+    tiempoInicial = time.time()
+    totaltime = 0
+    segundos = 200
+
     while True:
         # Centrar la ventana y despues inicializar pygame
         os.environ["SDL_VIDEO_CENTERED"] = "1"
@@ -28,10 +36,6 @@ def timeMode(cant_letras, tematica):
         pygame.display.set_caption("La escondida...")
         screen = pygame.display.set_mode((ANCHO, ALTO))
 
-        # tiempo total del juego
-        tiempoInicial = time.time()
-        totaltime = 0
-        segundos = 200
         fps = FPS_inicial
 
         # Musica Inicio
@@ -40,12 +44,10 @@ def timeMode(cant_letras, tematica):
         mixer.music.set_volume(0.5)
         mixer.music.play(-1)
 
-        puntos = 0
         palabraUsuario = ""
         listaPalabrasDiccionario = []
         ListaDePalabrasUsuario = []
         gano = False
-        perdio = False
 
         archivo = open('assets/txt/lemario.txt', 'r')
 
@@ -61,16 +63,20 @@ def timeMode(cant_letras, tematica):
         print(palabraCorrecta)
         intentos = 5
 
+        # Reproduccion de Banda sonora
+        musica = reproducirMusica(segundos)
+
+        if (not (termino)):
+            # 1 frame cada 1/fps segundos
+            tiempoActal = time.time()
+            totaltime = (tiempoActal - tiempoInicial)
+            segundos = 200 - totaltime
+
         while (True):
             if (not (segundos > (fps / 1000))):
-                perdio = True
+                termino = True
 
-            if (not (perdio or gano)):
-                # 1 frame cada 1/fps segundos
-                tiempoActal = time.time()
-                totaltime = (tiempoActal - tiempoInicial)
-                segundos = 200 - totaltime
-
+            if (not (termino)):
                 # Buscar la tecla apretada del modulo de eventos de pygame
                 for e in pygame.event.get():
                     # QUIT es apretar la X en la ventana
@@ -97,7 +103,6 @@ def timeMode(cant_letras, tematica):
                                     ganar = efectoSonido(2)
                                     otro = mixer.Sound(ganar)
                                     otro.play()
-
                                     puntos += 10
                                 else:
                                     # Sonido de palabra incorrecta / casi
@@ -106,6 +111,10 @@ def timeMode(cant_letras, tematica):
                                     otro.play()
                                     intentos -= 1
 
+            if (gano):
+                gano = False
+                break
+
             # Limpiar pantalla anterior
             screen.fill(COLOR_FONDO)
 
@@ -113,18 +122,8 @@ def timeMode(cant_letras, tematica):
             dibujar(screen, ListaDePalabrasUsuario, palabraUsuario,
                     puntos, segundos, gano, palabraCorrecta)
 
-            # Reproduccion de Banda sonora
-            musica = reproducirMusica(segundos)
-
-            if gano:  # cartel ganar
-                res = cartelGanar(screen)
-                if (res == 'reset'):
-                    break
-                elif (res == 'menu'):
-                    return
-
-            if perdio:  # cartel perder
-                res = cartelPerder(screen, palabraCorrecta)
+            if termino:  # cartel perder
+                res = cartelTermino(screen, palabraCorrecta)
                 if (res == 'reset'):
                     break
                 elif (res == 'menu'):
