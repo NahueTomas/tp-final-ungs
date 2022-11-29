@@ -45,6 +45,7 @@ def normalMode(cant_letras, tematica):
         listaPalabrasDiccionario = []
         ListaDePalabrasUsuario = []
         gano = False
+        perdio = False
 
         archivo = open('assets/txt/lemario.txt', 'r')
 
@@ -60,46 +61,50 @@ def normalMode(cant_letras, tematica):
         print(palabraCorrecta)
         intentos = 5
 
-        while (segundos > fps/1000 and intentos > 0 and not gano):
-            # 1 frame cada 1/fps segundos
-            tiempoActal = time.time()
-            totaltime = (tiempoActal - tiempoInicial)
+        while (True):
+            if (not (segundos > (fps / 1000) and intentos)):
+                perdio = True
 
-            # Buscar la tecla apretada del modulo de eventos de pygame
-            for e in pygame.event.get():
-                # QUIT es apretar la X en la ventana
-                if e.type == QUIT:
-                    pygame.quit()
-                    return ()
+            if (not (perdio or gano)):
+                # 1 frame cada 1/fps segundos
+                tiempoActal = time.time()
+                totaltime = (tiempoActal - tiempoInicial)
+                segundos = TIEMPO_MAX - totaltime
 
-                # Ver si fue apretada alguna tecla
-                if e.type == KEYDOWN:
-                    letra = dameLetraApretada(e.key)
-                    palabraUsuario += letra  # es la palabra que escribe el usuario
-                    if e.key == K_BACKSPACE:
-                        palabraUsuario = palabraUsuario[0:len(
-                            palabraUsuario)-1]
-                    if e.key == K_RETURN:
-                        if len(palabraUsuario) == cant_letras and palabraUsuario in listaPalabrasDiccionario and palabraUsuario not in ListaDePalabrasUsuario:
-                            gano = revision(palabraCorrecta, palabraUsuario)
-                            ListaDePalabrasUsuario.append(palabraUsuario)
-                            palabraUsuario = ""
+                # Buscar la tecla apretada del modulo de eventos de pygame
+                for e in pygame.event.get():
+                    # QUIT es apretar la X en la ventana
+                    if e.type == QUIT:
+                        pygame.quit()
+                        return ()
 
-                            if gano:
-                                # Sonido de palabra correcta
-                                ganar = efectoSonido(2)
-                                otro = mixer.Sound(ganar)
-                                otro.play()
+                    # Ver si fue apretada alguna tecla
+                    if e.type == KEYDOWN:
+                        letra = dameLetraApretada(e.key)
+                        palabraUsuario += letra  # es la palabra que escribe el usuario
+                        if e.key == K_BACKSPACE:
+                            palabraUsuario = palabraUsuario[0:len(
+                                palabraUsuario)-1]
+                        if e.key == K_RETURN:
+                            if len(palabraUsuario) == cant_letras and palabraUsuario in listaPalabrasDiccionario and palabraUsuario not in ListaDePalabrasUsuario:
+                                gano = revision(
+                                    palabraCorrecta, palabraUsuario)
+                                ListaDePalabrasUsuario.append(palabraUsuario)
+                                palabraUsuario = ""
 
-                                puntos += 10
-                            else:
-                                # Sonido de palabra incorrecta / casi
-                                error = efectoSonido(1)
-                                otro = mixer.Sound(error)
-                                otro.play()
-                                intentos -= 1
+                                if gano:
+                                    # Sonido de palabra correcta
+                                    ganar = efectoSonido(2)
+                                    otro = mixer.Sound(ganar)
+                                    otro.play()
 
-            segundos = TIEMPO_MAX - totaltime
+                                    puntos += 10
+                                else:
+                                    # Sonido de palabra incorrecta / casi
+                                    error = efectoSonido(1)
+                                    otro = mixer.Sound(error)
+                                    otro.play()
+                                    intentos -= 1
 
             # Limpiar pantalla anterior
             screen.fill(COLOR_FONDO)
@@ -112,17 +117,15 @@ def normalMode(cant_letras, tematica):
             musica = reproducirMusica(segundos)
 
             if gano:  # cartel ganar
-                cartelGanar(screen)
+                res = cartelGanar(screen)
+                if (res):
+                    break
 
-            if intentos == 0 or segundos < 0:  # cartel perder
-                cartelPerder(screen, palabraCorrecta)
+            if perdio:  # cartel perder
+                res = cartelPerder(screen)
+                if (res):
+                    break
 
             pygame.display.flip()
 
-        # Esperar el QUIT del usuario
-        for e in pygame.event.get():
-            if e.type == QUIT:
-                pygame.quit()
-                return
-
-        archivo.close()
+    archivo.close()
