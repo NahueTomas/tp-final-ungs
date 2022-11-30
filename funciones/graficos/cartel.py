@@ -1,11 +1,14 @@
 import pygame
 from pygame.locals import *
 
-from config.configuracion import COLOR_CORRECTA, COLOR_INCORRECTA, COLOR_CARTEL, TAMANNO_LETRA_GRANDE
+from config.configuracion import COLOR_CORRECTA, COLOR_INCORRECTA, TAMANNO_LETRA_GRANDE, TAMANNO_LETRA
+from funciones.teclado.dameLetraApretada import dameLetraApretada
 
 
 # CREACION DEL CARTEL FINAL
-def cartel(screen, titulo, colorFont, fontSize, subtitle=''):
+def cartel(screen, titulo, colorFont, fontSize, subtitle='', text=False, palabraUsuario=''):
+    defaultFont = pygame.font.Font(
+        pygame.font.get_default_font(), TAMANNO_LETRA)
     defaultFontGrande = pygame.font.Font(
         pygame.font.get_default_font(), fontSize)
     screen_rect = screen.get_rect()
@@ -53,11 +56,22 @@ def cartel(screen, titulo, colorFont, fontSize, subtitle=''):
         if event.type == QUIT:
             pygame.quit()
 
+        if (text):
+            if (event.type == KEYDOWN):
+                letra = dameLetraApretada(event.key)
+                palabraUsuario += letra
+                if event.key == K_BACKSPACE:
+                    palabraUsuario = palabraUsuario[0:len(palabraUsuario)-1]
+
+                screen.blit(defaultFont.render(
+                    palabraUsuario, 1, 'white'), (100, 300))
+    pygame.display.flip()
+
  # Cartel GANAR
 
 
 def cartelGanar(screen):
-    return cartel(screen, "GANASTE!!!", COLOR_CORRECTA, TAMANNO_LETRA_GRANDE)
+    return cartel(screen, "GANASTE!!!", COLOR_CORRECTA, TAMANNO_LETRA_GRANDE, '', True, '')
 
 
 # Cartel PERDER

@@ -16,10 +16,11 @@ from funciones.palabras.nuevaPalabra import nuevaPalabra
 from funciones.palabras.lectura import lectura
 from funciones.graficos.dibujar import dibujar
 from funciones.graficos.cartel import cartelGanar, cartelPerder
+from funciones.archivos.guardar_ranking import guardar_ranking
 
 
 # Funcion principal
-def normalMode(cant_letras, tematica):
+def normalMode(cant_letras, tematica, nombre):
     while True:
         # Centrar la ventana y despues inicializar pygame
         os.environ["SDL_VIDEO_CENTERED"] = "1"
@@ -119,8 +120,10 @@ def normalMode(cant_letras, tematica):
             if gano:  # cartel ganar
                 res = cartelGanar(screen)
                 if (res == 'reset'):
+                    guardar_ranking(nombre, puntos)
                     break
                 elif (res == 'menu'):
+                    guardar_ranking(nombre, puntos)
                     return
 
             if perdio:  # cartel perder

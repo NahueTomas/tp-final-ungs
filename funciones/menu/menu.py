@@ -18,6 +18,8 @@ def menuInicio(ancho, alto):
     menu = pygame_menu.Menu('La escondida', ancho, alto,
                             theme=pygame_menu.themes.THEME_DARK)
 
+    menu.add.text_input('Nombre: ', default='John Doe', textinput_id='nombre')
+
     menu.add.button('Jugar Normal', lambda: play_game(
         menu.get_input_data(), normalMode))
 
@@ -49,7 +51,8 @@ def menuInicio(ancho, alto):
 def play_game(inputs, game):
     letras = inputs['letras'][0][1]
     tematica = inputs['tematicas'][0][1]
-    game(letras, tematica)
+    nombre = inputs['nombre']
+    game(letras, tematica, nombre)
 
 
 def cambiar_menu(menu):
